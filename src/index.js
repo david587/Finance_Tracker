@@ -2,11 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import { AuthContextProvider } from './context/AuthContext';
+
+// The App component is wrapped inside the AuthContextProvider component, which means all the child components of App can access the AuthContext object and its state using the useAuthContext hook.
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <AuthContextProvider>
+      <App />
+    </AuthContextProvider>
   </React.StrictMode>
 );
 
