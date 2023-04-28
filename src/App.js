@@ -1,36 +1,38 @@
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom'
+import { useAuthContext } from './hooks/useAuthContext'
 
-import { BrowserRouter,Route, Switch } from 'react-router-dom';
-import { useAuthContext } from './hooks/useAuthContext';
-
-import Home from "./pages/home/Home";
-import Login from "./pages/login/Login";
-import Signup from "./pages/signup/Signup";
-import Navbar from './components/Navbar';
+// pages & components
+import Home from './pages/home/Home'
+import Login from './pages/login/Login'
+import Signup from './pages/signup/Signup'
+import Navbar from './components/Navbar'
 
 function App() {
-  const { authIsReady } = useAuthContext()
+  const { authIsReady, user } = useAuthContext()
 
   return (
     <div className="App">
-      only load this three when we get back user state response from backend,
       {authIsReady && (
-         <BrowserRouter>
-         <Navbar/>
+        <BrowserRouter>
+          <Navbar />
           <Switch>
             <Route exact path="/">
-              <Home/>
+              {!user && <Redirect to="/login" />}
+              {user && <Home />}
             </Route>
             <Route path="/login">
-              <Login/>
+              {user && <Redirect to="/" />}
+              {!user && <Login />}
             </Route>
             <Route path="/signup">
-              <Signup/>
+              {user && user.displayName && <Redirect to="/" />}
+              {!user && <Signup />}
             </Route>
           </Switch>
-         </BrowserRouter>
+        </BrowserRouter>
       )}
     </div>
   );
 }
 
-export default App;
+export default App
