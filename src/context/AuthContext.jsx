@@ -1,4 +1,5 @@
-import { Children, createContext, useReducer } from "react";
+import { Children, createContext, useEffect, useReducer } from "react";
+import { projectAuth } from "../firebase/config";
 
 // 1, AuthContext:
 // This is a React context object created using the createContext API. It will be used to share authentication-related data (e.g., user session) across the React component tree.
@@ -14,7 +15,12 @@ export const AuthContext = createContext()
 
 export const authReducer = (state, action) => {
     switch (action.type){
-
+        case 'LOGIN':
+            return  { ...state, user: action.payload }
+        case 'LOGOUT':
+            return { ...state, user: null }
+        case 'AUTH_IS_READY':
+            return {...state, user: action.payload, authIsReady: true}
         default:
             return state
     }
@@ -23,8 +29,22 @@ export const authReducer = (state, action) => {
 //entire app will be surrounded with this provider, all comp can access this
 export const AuthContextProvider = ({ children }) => {
     const [state,dispatch] = useReducer(authReducer, {
-        user: null
+        user: null,
+        //we have to save the state before refresh
+        authIsReady: false
     })
+
+    //this is why after refresh the user is loggge din in frontend
+    useEffect(()=>{
+        //communicate with firebase, run when auth changes
+        const unsub = projectAuth.onAuthStateChanged((user)=> {
+            dispatch({ type: 'AUTH_IS_READY', payload: user })
+            //only run 1time->only when the page is refreshed
+            unsub()
+        })
+    },[])
+
+    console.log('AuthContext state:' , state);
     
 
     return(
