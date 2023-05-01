@@ -18,7 +18,7 @@ export const useCollection = (collection, _query, _orderBy) => {
     }
     if(orderBy){
         //orderby() is a firebase method
-        ref = ref.orderBy()
+        ref = ref.orderBy(...orderBy)
     }
 
     const unsubscribe = ref.onSnapshot(snapshot => {
